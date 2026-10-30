@@ -35,7 +35,7 @@ export async function POST(request: Request): Promise<Response> {
     }
 
     const body = await request.text();
-    if (body.length > MAX_BODY_BYTES) {
+    if (new TextEncoder().encode(body).byteLength > MAX_BODY_BYTES) {
       return badRequest('Request body too large.');
     }
 

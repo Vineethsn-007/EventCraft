@@ -156,6 +156,14 @@ describe('POST /api/plan', () => {
     }
   });
 
+  it('enforces the body limit in UTF-8 bytes', async () => {
+    const response = await POST(makeRequest('€'.repeat(21_334)));
+    const body = (await response.json()) as { error: string };
+
+    expect(response.status).toBe(400);
+    expect(body.error).toBe('Request body too large.');
+  });
+
   it('rejects refine mode without a refinement message', async () => {
     const response = await POST(makeRequest(requestBody({ mode: 'refine' })));
     expect(response.status).toBe(400);
