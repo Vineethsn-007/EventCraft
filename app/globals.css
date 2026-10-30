@@ -1,0 +1,583 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ======================================================================
+   CSS Variables — Design System Tokens
+   ====================================================================== */
+
+/* Color Palette */
+:root {
+  /* Dark theme default */
+  --bg: #0F1115;
+  --bg-elevated: #181A1F;
+  --bg-soft: #22252A;
+  --border: #2B313B;
+  --primary: #FF6B35; /* Warm coral accent */
+  --rose: #FF8B6C;
+  --amber: #FFB84D;
+  --teal: #4ADE80;
+  --muted: #A0A4A8;
+  --muted-soft: #6B7080;
+  /* Dark ink on coral: white only reaches ~2.8:1, this reaches ~6.5:1 */
+  --on-primary: #16181A;
+  --on-bg: #FFFFFF;
+  --on-rose: #1F1F1F;
+  --on-amber: #1F1F1F;
+  --on-teal: #0F0F0F;
+  --danger: #FF8585;
+  --brand-strong: #FFA57E; /* small accent text on dark surfaces */
+  color-scheme: dark;
+}
+
+/* Light theme when the OS prefers light and the user has not forced dark */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    --bg: #F8FAFC;
+    --bg-elevated: #FFFFFF;
+    --bg-soft: #F1F5F9;
+    --border: #e2e8f0;
+    --primary: #FF6B35;
+    --rose: #FF8B6C;
+    --amber: #FFB84D;
+    --teal: #4ADE80;
+    --muted: #64748B;
+    --muted-soft: #94A3B8;
+    --on-primary: #16181A;
+    --on-bg: #0F1115;
+    --on-rose: #1F1F1F;
+    --on-amber: #1F1F1F;
+    --on-teal: #0F0F0F;
+    --danger: #B3261E;
+    --brand-strong: #C2440F; /* small accent text on light surfaces */
+    color-scheme: light;
+  }
+}
+
+/* Light theme when the user explicitly picked light (stored in localStorage) */
+:root[data-theme='light'] {
+  --bg: #F8FAFC;
+  --bg-elevated: #FFFFFF;
+  --bg-soft: #F1F5F9;
+  --border: #e2e8f0;
+  --primary: #FF6B35;
+  --rose: #FF8B6C;
+  --amber: #FFB84D;
+  --teal: #4ADE80;
+  --muted: #64748B;
+  --muted-soft: #94A3B8;
+  --on-primary: #16181A;
+  --on-bg: #0F1115;
+  --on-rose: #1F1F1F;
+  --on-amber: #1F1F1F;
+  --on-teal: #0F0F0F;
+  --danger: #B3261E;
+  --brand-strong: #C2440F;
+  color-scheme: light;
+}
+
+/* Safari/iOS full-screen workaround */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) var(--bg);
+}
+
+/* Hide scrollbar but allow scrolling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 3px;
+}
+
+/* ======================================================================
+   Base & Typography
+   ====================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+  /* Elements scrolled into view (hash links, programmatic focus) stop below
+     the sticky header instead of hiding underneath it. */
+  scroll-padding-top: 5.5rem;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  color: var(--on-bg);
+  background-color: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Fluid type scale with clamp() */
+h1 { font-size: clamp(2rem, 5vw + 1rem, 3.5rem); line-height: 1.2; font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.35rem, 1.5vw + 0.8rem, 1.75rem); line-height: 1.3; font-weight: 700; letter-spacing: -0.02em; }
+h3 { font-size: clamp(1.1rem, 1vw + 0.5rem, 1.35rem); line-height: 1.4; font-weight: 600; letter-spacing: -0.01em; }
+h4 { font-size: clamp(1rem, 0.8vw + 0.45rem, 1.15rem); line-height: 1.4; font-weight: 600; letter-spacing: -0.01em; }
+p { font-size: clamp(0.9rem, 0.8vw + 0.4rem, 1rem); line-height: 1.6; }
+small { font-size: 0.8rem; }
+
+/* Link styles */
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--rose);
+}
+
+/* ======================================================================
+   Utility Helpers
+   ====================================================================== */
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  z-index: 9999;
+  padding: 0.75rem 1.25rem;
+  background: var(--primary);
+  color: #16181A;
+  font-weight: 600;
+  border-radius: 100px;
+  transform: translateY(-300%);
+  transition: transform 0.2s ease;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+.line {
+  width: 100%;
+  height: 1px;
+  background: var(--border);
+  margin: 1.5rem 0;
+}
+
+.container {
+  width: 100%;
+  max-width: 1240px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container { padding-left: 1.5rem; padding-right: 1.5rem; }
+}
+
+@media (min-width: 768px) {
+  .container { padding-left: 2rem; padding-right: 2rem; }
+}
+
+@media (min-width: 1024px) {
+  .container { padding-left: 2.5rem; padding-right: 2.5rem; }
+}
+
+@media (min-width: 1280px) {
+  .container { padding-left: 3rem; padding-right: 3rem; }
+}
+
+/* Motion reduced */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ======================================================================
+   Components — Button (primary, ghost, pill)
+   ====================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--on-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--rose);
+}
+
+.btn-primary:focus-visible {
+  background-color: var(--rose);
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+.btn-ghost:hover {
+  background-color: var(--primary);
+  color: var(--bg);
+}
+
+.btn-ghost:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Pill button variant */
+.btn-pill {
+  border-radius: 100px;
+}
+
+/* ======================================================================
+   Components — Badge/Label
+   ====================================================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-rose { background: rgba(255, 139, 108, 0.15); color: var(--rose); }
+.badge-amber { background: rgba(255, 180, 77, 0.15); color: var(--amber); }
+.badge-teal { background: rgba(74, 222, 128, 0.15); color: var(--teal); }
+.badge-primary { background: var(--primary); color: var(--on-primary); }
+
+/* ======================================================================
+   Components — Card
+   ====================================================================== */
+
+.card {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+/* ======================================================================
+   Components — Tile
+   ====================================================================== */
+
+.tile {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.tile:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.tile:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ======================================================================
+   Components — Section
+   ====================================================================== */
+
+.section {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.section-header h2 {
+  margin-bottom: 0.5rem;
+}
+
+.section-header .line {
+  margin: 0 auto 1.5rem;
+  max-width: 60px;
+}
+
+/* ======================================================================
+   Components — Progress Bar
+   ====================================================================== */
+
+.progress-bar {
+  width: 100%;
+  height: 1rem;
+  background-color: var(--border);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 100px;
+  transition: width 0.3s ease;
+}
+
+/* ======================================================================
+   Components — Input
+   ====================================================================== */
+
+.input {
+  width: 100%;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--on-bg);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+}
+
+/* ======================================================================
+   Components — Select
+   ====================================================================== */
+
+.select {
+  width: 100%;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--on-bg);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  cursor: pointer;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.15);
+}
+
+/* ======================================================================
+   Components — Theme Toggle
+   ====================================================================== */
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background-color: var(--bg-soft);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Moon/Sun icon */
+.theme-toggle svg {
+  width: 20px;
+  height: 20px;
+  color: var(--muted);
+}
+
+/* ======================================================================
+   Mobile Menu
+   ====================================================================== */
+
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  background-color: var(--bg);
+  /* Below the sticky nav (z-50) so the close button stays clickable */
+  z-index: 40;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  padding-top: 5rem;
+}
+
+.mobile-menu.open {
+  transform: translateX(0);
+}
+
+.mobile-menu ul {
+  padding: 1rem;
+  margin: 0;
+}
+
+.mobile-menu li {
+  list-style: none;
+}
+
+.mobile-menu a {
+  display: block;
+  padding: 1rem 1.5rem;
+  color: var(--on-bg);
+  text-decoration: none;
+  font-size: 1.25rem;
+}
+
+.mobile-menu a:hover {
+  color: var(--primary);
+}
+
+/* Menu overlay */
+.menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.menu-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ======================================================================
+   Focus Ring (focus-visible)
+   ====================================================================== */
+
+.focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ======================================================================
+   Loader (plan generation)
+   ====================================================================== */
+
+@keyframes loader-pop {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.stage-text {
+  animation: loader-pop 0.3s ease;
+}
+
+@keyframes loader-shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, var(--bg-soft) 25%, var(--border) 50%, var(--bg-soft) 75%);
+  background-size: 800px 100%;
+  animation: loader-shimmer 1.4s linear infinite;
+}
+
+.loader-spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  border: 4px solid var(--border);
+  border-top-color: var(--primary);
+  animation: spin 0.8s linear infinite;
+}
+
+.loader-spinner-sm {
+  width: 20px;
+  height: 20px;
+  border-width: 2.5px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ======================================================================
+   Print Stylesheet
+   ====================================================================== */
+
+@media print {
+  *,
+  *::before,
+  *::after {
+    background: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  a:not([href*="#"]) {
+    text-decoration: none;
+  }
+
+  img {
+    max-width: 100% !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
