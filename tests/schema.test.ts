@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { LIMITS, planRequestSchema, planResponseSchema } from '../lib/schema';
+import { apiPlanResponseSchema, LIMITS, planRequestSchema, planResponseSchema } from '../lib/schema';
 
 function futureDate(daysAhead = 60): string {
   const d = new Date();
@@ -165,5 +165,33 @@ describe('planResponseSchema (LLM JSON contract)', () => {
     const result = planResponseSchema.safeParse(loose);
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.ideas[0]?.kind).toBe('other');
+  });
+});
+
+describe('apiPlanResponseSchema', () => {
+  it('accepts a complete sanitized API response', () => {
+    const result = apiPlanResponseSchema.safeParse({
+      plan: {
+        budget: {
+          total: 5000,
+          categories: [{ name: 'Venue', amount: 5000, percentage: 100, tip: 'Book early' }],
+        },
+        timeline: [{ daysBefore: 30, date: '2027-01-01', title: 'Book venue', description: 'Pay advance' }],
+        vendors: [{ category: 'Venue', items: ['Capacity for 120 guests?'] }],
+        ideas: [{ title: 'Colour story', detail: 'Use one palette', kind: 'theme' }],
+      },
+      demoMode: false,
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects malformed plans before the client renders them', () => {
+    const result = apiPlanResponseSchema.safeParse({
+      plan: { budget: { total: 5000, categories: [] } },
+      demoMode: false,
+    });
+
+    expect(result.success).toBe(false);
   });
 });

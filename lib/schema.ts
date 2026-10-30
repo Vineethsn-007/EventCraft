@@ -105,16 +105,13 @@ const llmBudgetSchema = z.object({
     .max(12),
 });
 
-const llmTimelineSchema = z
-  .array(
-    z.object({
-      daysBefore: z.number().int().min(0).max(540),
-      title: z.string().trim().min(1).max(120),
-      description: z.string().trim().min(1).max(400),
-    }),
-  )
-  .min(1)
-  .max(20);
+const timelineMilestoneSchema = z.object({
+  daysBefore: z.number().int().min(0).max(540),
+  title: z.string().trim().min(1).max(120),
+  description: z.string().trim().min(1).max(400),
+});
+
+const llmTimelineSchema = z.array(timelineMilestoneSchema).min(1).max(20);
 
 const llmVendorsSchema = z
   .array(
@@ -148,3 +145,19 @@ export const planResponseSchema = z.object({
 });
 
 export type PlanResponseInput = z.infer<typeof planResponseSchema>;
+
+export const apiPlanResponseSchema = z.object({
+  plan: z.object({
+    budget: llmBudgetSchema.extend({
+      total: z.number().int().min(LIMITS.minBudget).max(LIMITS.maxBudget),
+    }),
+    timeline: z
+      .array(timelineMilestoneSchema.extend({ date: isoDateSchema }))
+      .min(1)
+      .max(20),
+    vendors: llmVendorsSchema,
+    ideas: llmIdeasSchema,
+  }),
+  demoMode: z.boolean(),
+  demoReason: z.string().optional(),
+});

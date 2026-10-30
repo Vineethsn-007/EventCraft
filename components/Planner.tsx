@@ -8,7 +8,7 @@ import DemoBanner from './DemoBanner';
 import PlanLoader from './PlanLoader';
 import { EVENT_TYPES, type EventType } from '../types/plan';
 import { parseFormValues, type FormErrors } from './EventForm';
-import { planRequestSchema } from '../lib/schema';
+import { apiPlanResponseSchema, planRequestSchema } from '../lib/schema';
 import { formatIsoDate } from '../lib/utils';
 import type { PlanResponse } from '../types/plan';
 import { printPlanAsText } from '../lib/exportPlan';
@@ -126,7 +126,17 @@ export default function Planner({ initialEventType }: { initialEventType?: strin
           return;
         }
 
-        const result = data as PlanResponse;
+        const parsedResponse = apiPlanResponseSchema.safeParse(data);
+        if (!parsedResponse.success) {
+          setStatusMessage('Could not generate a plan. Check your connection and try again.');
+          setPhase(planResult ? 'done' : 'idle');
+          if (refinement) {
+            setChat((history) => [...history, { role: 'ai', text: 'Sorry, that refinement failed to apply.' }]);
+          }
+          return;
+        }
+
+        const result: PlanResponse = parsedResponse.data;
         setPlanResult(result);
         setPhase('done');
         setChat((history) =>
